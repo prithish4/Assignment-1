@@ -23,12 +23,21 @@ class Stack {
 
         // Function to add an element to the stack
         void push(int x) {
-            //Write your code here
+            if (isFull()) {
+                cout << "Stack overflow!" << endl;
+                return;
+            }
+            arr[++top] = x;
+        
         }
 
         // Function to pop the top element
         int pop() {
-            //Write your code here
+            if (isEmpty()) {
+                cout << "Stack underflow!" << endl;
+                return -1;
+            }
+            return arr[top--];
         }
 
         // Function to display the elements of the stack
@@ -47,12 +56,12 @@ class Stack {
     
         // Function to check if the stack is full
         bool isFull() const {
-            //Write your code here
+            return top == capacity - 1;
         }
 
         // Function to check if the stack is empty
         bool isEmpty() const {
-            //Write your code here
+            return top == -1;
         }
 
 };
@@ -72,9 +81,23 @@ void displayTowers() {
     C->display();
     cout << "\n";
 }
-
+// Function to move disks between towers
+void moveDisk(Stack& from, Stack& to, char fromTower, char toTower) {
+    int disk = from.pop();
+    if (disk != -1) {
+        to.push(disk);
+        cout << "Move disk " << disk << " from " << fromTower << " to " << toTower << endl;
+        displayTowers();
+    }
 void rearrangeDisks(int n, Stack& A, Stack& B, Stack& C, char from, char to, char aux) {
-    //Write your code here
+    if (n == 1) {
+        moveDisk(A,B, from, to);
+        return;
+    }
+
+    rearrangeDisks(n - 1, A,C,B, from, aux, to);
+    moveDisk(source, target, from, to);
+    rearrangeDisks(n - 1, C,B,A, aux, to, from);
 }
 
 int main() { // The main function has been defined for you, do not edit anything here.
