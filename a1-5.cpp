@@ -23,12 +23,20 @@ class Stack {
 
         // Function to add an element to the stack
         void push(int x) {
-            //Write your code here
+            if (isFull()) {
+                cout << "Stack overflow!" << endl;
+                return;
+            }
+            arr[++top] = x;
         }
 
         // Function to pop the top element
         int pop() {
-            //Write your code here
+            if (isEmpty()) {
+                cout << "Stack underflow!" << endl;
+                return -1;
+            }
+            return arr[top--];
         }
 
         // Function to display the elements of the stack
@@ -47,12 +55,12 @@ class Stack {
     
         // Function to check if the stack is full
         bool isFull() const {
-            //Write your code here
+            return top == capacity - 1;
         }
 
         // Function to check if the stack is empty
         bool isEmpty() const {
-            //Write your code here
+            return top == -1;
         }
 
 };
@@ -73,26 +81,60 @@ void displayTowers() {
     cout << "\n";
 }
 
-void rearrangeDisks(int n, Stack& A, Stack& B, Stack& C, char from, char to, char aux) {
-    //Write your code here
+// Function to move disks between towers
+void moveDisk(Stack& from, Stack& to, char fromTower, char toTower) {
+    int disk = from.pop();
+    if (disk != -1) {
+        to.push(disk);
+        cout << "Move disk " << disk << " from " << fromTower << " to " << toTower << endl;
+        displayTowers();
+    }
 }
 
-int main() { // The main function has been defined for you, do not edit anything here.
+// Recursive function to rearrange the disks
+void rearrangeDisks(int n, Stack& source, Stack& target, Stack& auxiliary, char from, char to, char aux) {
+    // Base case for n = 0 (no disks to move)
+    if (n == 0) {
+        return;
+    }
+    
+    // Base case for a single disk (move directly from source to target)
+    if (n == 1) {
+        moveDisk(source, target, from, to);
+        return;
+    }
+
+    // Recursive case for n > 1
+    rearrangeDisks(n - 1, source, auxiliary, target, from, aux, to);
+    moveDisk(source, target, from, to);
+    rearrangeDisks(n - 1, auxiliary, target, source, aux, to, from);
+}
+
+int main() { 
     int n;
     cout << "Enter the number of disks: ";
     cin >> n;
 
+    // Handling n = 0, no disks to move
+    if (n < 0) {
+        cout << "Invalid number of disks!" << endl;
+        return 1;
+    }
+    
     A = new Stack(n);
     B = new Stack(n);
     C = new Stack(n);
 
-    for (int i = n; i >= 1; i--) {
-        A->push(i);
+    // Initialize the tower A with disks, if n > 0
+    if (n > 0) {
+        for (int i = n; i >= 1; i--) {
+            A->push(i);
+        }
     }
 
     displayTowers();
 
-    rearrangeDisks(n, *A, *B, *C, 'A', 'C', 'B');
+    rearrangeDisks(n, *A, *C, *B, 'A', 'C', 'B');
 
     delete A;
     delete B;
